@@ -20,7 +20,7 @@ def updateResources():
             image = face_recognition.load_image_file(f'{knownFacesDir}/{name}/{filename}')
             encoding = face_recognition.face_encodings(image)
             known_faces.append(encoding)
-            known_names.append(name)
+        known_names.append(name)
 
 
 def loop():
