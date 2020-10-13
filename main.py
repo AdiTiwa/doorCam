@@ -28,12 +28,12 @@ print("processing unknown faces")
 for filename in os.listdir(unknownFacesDir):
     print(filename)
     image = face_recognition.load_image(f"{unknownFaceDir}/{filename}")
-    locations = face_recognition.face_locations(image, model = MODEL)
+    locations = face_recognition.face_locations(image, model = model)
     encodings = face_recognition.face_encodings(image, locations)
     image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
 
     for face_encoding, face_location in zip(encodings, locations):
-        results = face_recognition.compare_faces(known_faces, face_encoding, TOLERANCE)
+        results = face_recognition.compare_faces(known_faces, face_encoding, tolerance)
         match = None
         if True in results:
             match = known_names[results.index(True)]
