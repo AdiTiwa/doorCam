@@ -3,10 +3,8 @@ import tkinter as tk
 class gradientFrame(tk.Frame):
     def __init__(self, parent):
         tk.Frame.__init__(self, parent)
-        f1 = GradientFrame(self, borderwidth=1, relief="sunken")
-        f2 = GradientFrame(self, "green", "blue", borderwidth=1, relief="sunken")
-        f1.pack(side="top", fill="both", expand=True)
-        f2.pack(side="bottom", fill="both", expand=True)
+        gradientBackground = GradientFrame(self, "green", "blue", borderwidth=1, relief="none")
+        gradientBackground.pack(side="bottom", fill="both", expand=True)
 
 class GradientFrame(tk.Canvas):
     '''A gradient frame which uses a canvas to draw the background'''

@@ -3,7 +3,7 @@ import numpy as np
 import os
 import face_recognition
 from tkinter import *
-from tkinter import messageBox
+import sys
 from res import *
 import threading
 
@@ -54,10 +54,8 @@ def faceRecognise(img):
     
     return None
 
-def userAlert(msg, action):
-    userAlertWin = Tk()
-
-    userAlertWin.mainloop()
+def userAlert(msg):
+    return True
 
 def faceCheckLoop():
     cam = cv2.videoCapture()
@@ -80,14 +78,19 @@ def faceCheckLoop():
         cv2.imwrite(os.path.join('img.jpg'), frame)
         face = faceRecognise('img.jpg')
         if not face == None:
-            userAlert(f'{face} is trying to enter your home')
+            if userAlert(f'{face} is trying to enter your home'):
+                print(f'{face} is let in')
+            else:
+                print(f'{face} was not let in')
+
         if os.path.exist('img.png'):
             os.remove('img.png')
         else:
-            raise IOError('The file was not saved properly...')
+            raise FileNotFoundError('The file was not saved properly...')
             break
 
     cam.release()
+    sys.exit()
 
 def tkWindow():
     #make the window
@@ -106,8 +109,8 @@ def tkWindow():
     root.mainloop()
 
 def onWindowClose():
-    root.destroy()
     run = False
+    sys.exit()
 
 def loop():
     faceRecogniseThread = threading.Thread(target = faceCheckLoop)
@@ -115,6 +118,11 @@ def loop():
 
     faceRecogniseThread.start()
     tkWindowThread.start()
+
+    while run:
+        pass
+
+    sys.exit()
 
 updateResources()
 loop()
