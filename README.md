@@ -14,3 +14,5 @@ The software works with the DoorCam lock, which sends the recognized faced throu
 ![DoorCam Lock](https://i.ibb.co/svNdjYy/Screen-Shot-2020-10-13-at-10-27-54-PM.png)
 
 This can work with any camera, but most cameras don’t have locks built in, so all you’d be doing is logging faces. 
+
+The code in the repo is commented. Have fun!
