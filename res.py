@@ -1,83 +1,37 @@
-from tkinter import *
+import tkinter as tk
 
-def hex2rgb(str_rgb):
-    try:
-        rgb = str_rgb[1:]
+class gradientFrame(tk.Frame):
+    def __init__(self, parent):
+        tk.Frame.__init__(self, parent)
+        f1 = GradientFrame(self, borderwidth=1, relief="sunken")
+        f2 = GradientFrame(self, "green", "blue", borderwidth=1, relief="sunken")
+        f1.pack(side="top", fill="both", expand=True)
+        f2.pack(side="bottom", fill="both", expand=True)
 
-        if len(rgb) == 6:
-            r, g, b = rgb[0:2], rgb[2:4], rgb[4:6]
-        elif len(rgb) == 3:
-            r, g, b = rgb[0] * 2, rgb[1] * 2, rgb[2] * 2
-        else:
-            raise ValueError()
-    except:
-        raise ValueError("Invalid value %r provided for rgb color."% str_rgb)
+class GradientFrame(tk.Canvas):
+    '''A gradient frame which uses a canvas to draw the background'''
+    def __init__(self, parent, color1="red", color2="black", **kwargs):
+        tk.Canvas.__init__(self, parent, **kwargs)
+        self._color1 = color1
+        self._color2 = color2
+        self.bind("<Configure>", self._draw_gradient)
 
-    return tuple(int(v, 16) for v in (r, g, b))
+    def _draw_gradient(self, event=None):
+        '''Draw the gradient'''
+        self.delete("gradient")
+        width = self.winfo_width()
+        height = self.winfo_height()
+        limit = width
+        (r1,g1,b1) = self.winfo_rgb(self._color1)
+        (r2,g2,b2) = self.winfo_rgb(self._color2)
+        r_ratio = float(r2-r1) / limit
+        g_ratio = float(g2-g1) / limit
+        b_ratio = float(b2-b1) / limit
 
-class GradientFrame(Canvas):
-
-    def __init__(self, master, from_color, to_color, width=None, height=None, orient=HORIZONTAL, steps=None, **kwargs):
-        Canvas.__init__(self, master, **kwargs)
-        if steps is None:
-            if orient == HORIZONTAL:
-                steps = height
-            else:
-                steps = width
-
-        if isinstance(from_color, basestring):
-            from_color = hex2rgb(from_color)
-            
-        if isinstance(to_color, basestring):
-            to_color = hex2rgb(to_color)
-
-        r,g,b = from_color
-        dr = float(to_color[0] - r)/steps
-        dg = float(to_color[1] - g)/steps
-        db = float(to_color[2] - b)/steps
-
-        if orient == HORIZONTAL:
-            if height is None:
-                raise ValueError("height can not be None")
-            
-            self.configure(height=height)
-            
-            if width is not None:
-                self.configure(width=width)
-
-            img_height = height
-            img_width = self.winfo_screenwidth()
-
-            image = Image.new("RGB", (img_width, img_height), "#FFFFFF")
-            draw = ImageDraw.Draw(image)
-
-            for i in range(steps):
-                r,g,b = r+dr, g+dg, b+db
-                y0 = int(float(img_height * i)/steps)
-                y1 = int(float(img_height * (i+1))/steps)
-
-                draw.rectangle((0, y0, img_width, y1), fill=(int(r),int(g),int(b)))
-        else:
-            if width is None:
-                raise ValueError("width can not be None")
-            self.configure(width=width)
-            
-            if height is not None:
-                self.configure(height=height)
-
-            img_height = self.winfo_screenheight()
-            img_width = width
-            
-            image = Image.new("RGB", (img_width, img_height), "#FFFFFF")
-            draw = ImageDraw.Draw(image)
-
-            for i in range(steps):
-                r,g,b = r+dr, g+dg, b+db
-                x0 = int(float(img_width * i)/steps)
-                x1 = int(float(img_width * (i+1))/steps)
-
-                draw.rectangle((x0, 0, x1, img_height), fill=(int(r),int(g),int(b)))
-        
-        self._gradient_photoimage = ImageTk.PhotoImage(image)
-
-        self.create_image(0, 0, anchor=NW, image=self._gradient_photoimage)
+        for i in range(limit):
+            nr = int(r1 + (r_ratio * i))
+            ng = int(g1 + (g_ratio * i))
+            nb = int(b1 + (b_ratio * i))
+            color = "#%4.4x%4.4x%4.4x" % (nr,ng,nb)
+            self.create_line(i,0,i,height, tags=("gradient",), fill=color)
+        self.lower("gradient")
